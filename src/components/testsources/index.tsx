@@ -1,0 +1,102 @@
+import {
+  ConditionsTable,
+  MainInfoSection,
+  SectionBox,
+  SectionFilterHeader
+} from "@kinvolk/headlamp-plugin/lib/CommonComponents";
+import {makeCustomResourceClass} from "@kinvolk/headlamp-plugin/lib/K8s/crd";
+import {useFilterFunc} from '@kinvolk/headlamp-plugin/lib/Utils';
+import React from "react";
+import {NotSupported} from "../../checktestkube";
+import {TestKubeLink, ObjectEvents} from "../helpers";
+import Table from "../common/Table";
+import {useParams} from "react-router-dom";
+
+export function testSourcesClass() {
+  return makeCustomResourceClass({
+    apiInfo: [{group: 'tests.testkube.io', version: 'v1'}],
+    isNamespaced: true,
+    singularName: 'testsource',
+    pluralName: 'testsources',
+  });
+}
+
+export function TestSourcesList() {
+  const filterFunction = useFilterFunc();
+  const [resources, setResources] = React.useState(null);
+  const [error, setError] = React.useState(null);
+
+  testSourcesClass().useApiList(setResources, setError);
+
+  if (error?.status === 404) {
+    return <NotSupported typeName="Testkube"/>;
+  }
+
+  return (
+    <>
+      <SectionBox title={<SectionFilterHeader title="Sources"/>}>
+        <Table
+          data={resources}
+          // @ts-ignore -- TODO Update the sorting param
+          defaultSortingColumn={2}
+          columns={[
+            TestKubeLink(testSourcesClass()),
+            'namespace',
+            'age',
+          ]}
+          filterFunction={filterFunction}
+        />
+      </SectionBox>
+    </>
+  );
+}
+
+export function TestSourceDetailViewer(props: { name?: string; namespace?: string }) {
+  const params = useParams<{ namespace: string; name: string }>();
+  const {name = params.name, namespace = params.namespace} = props;
+
+  return (
+    <>
+      <CustomResourceDetails name={name} namespace={namespace}/>
+      <ObjectEvents name={name} namespace={namespace} resourceClass={testSourcesClass()}/>
+    </>
+  );
+}
+
+function CustomResourceDetails(props) {
+  const {name, namespace} = props;
+  const [cr, setCr] = React.useState(null);
+
+  testSourcesClass().useApiGet(setCr, name, namespace);
+
+  function prepareExtraInfo(cr) {
+    if (!cr) {
+      return [];
+    }
+
+    const extraInfo = [
+    ];
+
+    return extraInfo;
+  }
+
+  function prepareActions() {
+    const actions = [];
+    return actions;
+  }
+
+  return (
+    <>
+      {cr && (
+        <MainInfoSection
+          resource={cr}
+          extraInfo={prepareExtraInfo(cr)}
+          actions={prepareActions()}
+        />
+      )}
+      <SectionBox title="Conditions">
+        <ConditionsTable resource={cr?.jsonData}/>
+      </SectionBox>
+    </>
+  );
+}
