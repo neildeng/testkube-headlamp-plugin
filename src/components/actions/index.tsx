@@ -1,9 +1,9 @@
 import {ActionButton, ConfirmDialog} from '@kinvolk/headlamp-plugin/lib/components/common';
 import React from 'react'
 import {useSnackbar} from 'notistack';
-import {ExecuteTestWorkflow} from "../../services/TestkubeAPI";
+import {RunTestWorkflow} from "../../services/TestkubeProxyAPI";
 
-function RunAction(props) {
+function RunAction(props: any) {
   const {enqueueSnackbar} = useSnackbar();
   const [open, setOpen] = React.useState<boolean>(false);
   const {resource} = props;
@@ -24,17 +24,18 @@ function RunAction(props) {
         handleClose={() => setOpen(false)}
         onConfirm={() => {
           setOpen(false);
-
-          ExecuteTestWorkflow(resource.metadata.name)
-            .then((response: any) => {
-              enqueueSnackbar(
-                `Successfully execute TestWorkflow for executed.id(${response.id})`,
-                {variant: 'success'}
-              )
-            })
-            .catch(error => {
-              enqueueSnackbar(`error ${error}`, {variant: 'error'});
-            });
+          (async () => {
+            await RunTestWorkflow({name: resource.metadata.name})
+              .then((response: any) => {
+                enqueueSnackbar(
+                  `Successfully execute TestWorkflow for executed.id(${response.id})`,
+                  {variant: 'success'}
+                )
+              })
+              .catch(error => {
+                enqueueSnackbar(`error ${error}`, {variant: 'error'});
+              });
+          })();
         }}
       />
     </>

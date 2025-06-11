@@ -13,7 +13,7 @@ import {NotSupported} from '../../checktestkube';
 import {makeCustomResourceClass} from '@kinvolk/headlamp-plugin/lib/lib/k8s/crd';
 import {TestKubeLink, ObjectEvents} from '../helpers';
 import {useParams} from 'react-router-dom';
-import {FetchTestWorkflowExecutes} from "../../services/TestkubeAPI";
+import {TestkubeWorkflowExecutesTable} from "./TestkubeWorkflowExecutesTable";
 
 export function testWorkflowsClass() {
   return makeCustomResourceClass({
@@ -66,28 +66,23 @@ export function TestWorkflowDetailViewer(props: { name?: string; namespace?: str
   );
 }
 
-function CustomResourceDetails(props) {
+function CustomResourceDetails(props: any) {
   const {name, namespace} = props;
   const [cr, setCr] = React.useState(null);
-  const [executes, setExecutes] = React.useState(null);
 
   testWorkflowsClass().useApiGet(setCr, name, namespace);
 
-  FetchTestWorkflowExecutes(setExecutes, name);
-
-  function prepareExtraInfo(cr) {
+  function prepareExtraInfo(cr: any) {
     if (!cr) {
       return [];
     }
 
-    const extraInfo = [
+    return [
       {
         name: 'Working Directory',
         value: cr?.jsonData?.spec.container?.workingDir,
       },
     ];
-
-    return extraInfo;
   }
 
   function prepareActions() {
@@ -107,7 +102,7 @@ function CustomResourceDetails(props) {
       )}
       {cr?.jsonData?.spec?.content?.git && <GitRepositoryTable git={cr?.jsonData?.spec?.content?.git}/>}
       {cr?.jsonData?.spec?.steps && <StepsTable steps={cr?.jsonData?.spec?.steps}/>}
-      <ExecutesTable executes={executes}/>
+      <TestkubeWorkflowExecutesTable testkubeWorkflowName={props.name}/>
       <SectionBox title="Conditions">
         <ConditionsTable resource={cr?.jsonData}/>
       </SectionBox>
@@ -115,7 +110,7 @@ function CustomResourceDetails(props) {
   );
 }
 
-function GitRepositoryTable(props) {
+function GitRepositoryTable(props: any) {
   const {git} = props;
   return (
     <SectionBox title="Context From Git">
@@ -139,7 +134,7 @@ function GitRepositoryTable(props) {
   );
 }
 
-function StepsTable(props) {
+function StepsTable(props: any) {
   const {steps} = props;
   return (
     <SectionBox title="Steps">
@@ -168,31 +163,4 @@ function StepsTable(props) {
   );
 }
 
-function ExecutesTable(props) {
-  const {executes} = props;
-  return (
-    <SectionBox title="Executes">
-      <Table
-        data={executes}
-        columns={[
-          {
-            header: 'ID',
-            accessorFn: item => (item.id),
-          },
-          {
-            header: 'NAME',
-            accessorFn: item => (item.name),
-          },
-          {
-            header: 'STATUS',
-            accessorFn: item => (item.result.status),
-          },
-          {
-            header: 'DURATION',
-            accessorFn: item => (item.result.duration),
-          },
-        ]}
-      />
-    </SectionBox>
-  );
-}
+
