@@ -1,12 +1,12 @@
-import {ActionButton, ConfirmDialog} from '@kinvolk/headlamp-plugin/lib/components/common';
-import React from 'react'
-import {useSnackbar} from 'notistack';
-import {RunTestWorkflow} from "../../services/TestkubeProxyAPI";
+import { ActionButton, ConfirmDialog } from '@kinvolk/headlamp-plugin/lib/components/common';
+import { useSnackbar } from 'notistack';
+import React from 'react';
+import { RunTestWorkflow } from '../../services/TestkubeProxyAPI';
 
 function RunAction(props: any) {
-  const {enqueueSnackbar} = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = React.useState<boolean>(false);
-  const {resource} = props;
+  const { resource } = props;
   return (
     <>
       <ActionButton
@@ -25,15 +25,15 @@ function RunAction(props: any) {
         onConfirm={() => {
           setOpen(false);
           (async () => {
-            await RunTestWorkflow({name: resource.metadata.name})
+            await RunTestWorkflow({ name: resource.metadata.name })
               .then((response: any) => {
                 enqueueSnackbar(
                   `Successfully execute TestWorkflow for executed.id(${response.id})`,
-                  {variant: 'success'}
-                )
+                  { variant: 'success' }
+                );
               })
               .catch(error => {
-                enqueueSnackbar(`error ${error}`, {variant: 'error'});
+                enqueueSnackbar(`error ${error}`, { variant: 'error' });
               });
           })();
         }}
@@ -42,6 +42,4 @@ function RunAction(props: any) {
   );
 }
 
-export {
-  RunAction,
-};
+export { RunAction };

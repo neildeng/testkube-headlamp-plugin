@@ -6,11 +6,11 @@ import {
   TableColumn,
   TableProps as HTableProps,
 } from '@kinvolk/headlamp-plugin/lib/components/common';
-import {KubeObject} from '@kinvolk/headlamp-plugin/lib/lib/k8s/cluster';
-import {KubeCRD} from '@kinvolk/headlamp-plugin/lib/lib/k8s/crd';
+import { KubeObject } from '@kinvolk/headlamp-plugin/lib/lib/k8s/cluster';
+import { KubeCRD } from '@kinvolk/headlamp-plugin/lib/lib/k8s/crd';
 import React from 'react';
+import { PluralName } from '../helpers/pluralName';
 import StatusLabel from './StatusLabel';
-import {PluralName} from '../helpers/pluralName';
 
 type CommonColumnType =
   | 'namespace'
@@ -44,7 +44,7 @@ function prepareLastUpdated(item: KubeCRD) {
 }
 
 function prepareNameColumn(colProps: Partial<NameColumn> = {}): TableCol {
-  const {routeName, ...genericProps} = colProps;
+  const { routeName, ...genericProps } = colProps;
 
   // Remove the extends property from the genericProps
   delete genericProps.extends;
@@ -52,7 +52,7 @@ function prepareNameColumn(colProps: Partial<NameColumn> = {}): TableCol {
   return {
     header: 'Name',
     accessorKey: 'metadata.name',
-    Cell: ({row: {original: item}}) => (
+    Cell: ({ row: { original: item } }) => (
       <Link
         routeName={routeName}
         params={{
@@ -69,7 +69,7 @@ function prepareNameColumn(colProps: Partial<NameColumn> = {}): TableCol {
 }
 
 export function Table(props: TableProps) {
-  const {columns, data, ...otherProps} = props;
+  const { columns, data, ...otherProps } = props;
 
   const processedColumns = React.useMemo(() => {
     return columns.map(column => {
@@ -79,7 +79,7 @@ export function Table(props: TableProps) {
             return {
               header: 'Namespace',
               accessorKey: 'metadata.namespace',
-              Cell: ({row: {original: item}}) => (
+              Cell: ({ row: { original: item } }) => (
                 <Link
                   routeName="namespace"
                   params={{
@@ -96,7 +96,7 @@ export function Table(props: TableProps) {
             return {
               header: 'Last Updated',
               accessorFn: item => prepareLastUpdated(item),
-              Cell: ({cell}: any) => <DateLabel format="mini" date={cell.getValue()}/>,
+              Cell: ({ cell }: any) => <DateLabel format="mini" date={cell.getValue()} />,
             };
           case 'age':
             return {
@@ -109,16 +109,16 @@ export function Table(props: TableProps) {
               muiTableBodyCellProps: {
                 align: 'right',
               },
-              Cell: ({row}) =>
+              Cell: ({ row }) =>
                 row.original && (
-                  <DateLabel date={row.original.metadata.creationTimestamp} format="mini"/>
+                  <DateLabel date={row.original.metadata.creationTimestamp} format="mini" />
                 ),
             };
           case 'status':
             return {
               header: 'Status',
               accessorFn: item => {
-                return <StatusLabel item={item}/>;
+                return <StatusLabel item={item} />;
               },
             };
           case 'revision':

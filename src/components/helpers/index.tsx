@@ -4,19 +4,19 @@ import {
   SectionBox,
   ShowHideLabel,
 } from '@kinvolk/headlamp-plugin/lib/components/common';
-import {KubeObjectClass} from '@kinvolk/headlamp-plugin/lib/lib/k8s/cluster';
-import React from 'react';
-import {PluralName} from './pluralName';
 import Event from '@kinvolk/headlamp-plugin/lib/K8s/event';
+import { KubeObjectClass } from '@kinvolk/headlamp-plugin/lib/lib/k8s/cluster';
+import { localeDate, timeAgo } from '@kinvolk/headlamp-plugin/lib/Utils';
+import React from 'react';
 import Table from '../common/Table';
-import {localeDate, timeAgo} from '@kinvolk/headlamp-plugin/lib/Utils';
+import { PluralName } from './pluralName';
 
 export function ObjectEvents(props: {
   name: string;
   namespace: string;
   resourceClass: KubeObjectClass;
 }) {
-  const {name, namespace, resourceClass} = props;
+  const { name, namespace, resourceClass } = props;
 
   const [events] = Event.useList({
     namespace,
@@ -26,7 +26,7 @@ export function ObjectEvents(props: {
   if (!events) {
     return <></>;
   }
-  return <ObjectEventsRenderer events={events}/>;
+  return <ObjectEventsRenderer events={events} />;
 }
 
 export function TestKubeLink(resourceClass: KubeObjectClass) {
@@ -35,7 +35,7 @@ export function TestKubeLink(resourceClass: KubeObjectClass) {
   return {
     header: 'Name',
     accessorKey: 'metadata.name',
-    Cell: ({cell, row}) => (
+    Cell: ({ cell, row }) => (
       <Link
         routeName={pluralName.slice(0, -1)}
         params={{
@@ -51,7 +51,7 @@ export function TestKubeLink(resourceClass: KubeObjectClass) {
 }
 
 export function ObjectEventsRenderer(props: { events?: Event[] }) {
-  const {events} = props;
+  const { events } = props;
 
   if (!events) {
     return <></>;
@@ -102,7 +102,7 @@ export function ObjectEventsRenderer(props: { events?: Event[] }) {
                   item.firstOccurrence
                 )})`;
               }
-              const eventDate = timeAgo(item.lastOccurrence, {format: 'mini'});
+              const eventDate = timeAgo(item.lastOccurrence, { format: 'mini' });
               let label: string;
               if (item.count > 1) {
                 label = `${eventDate} ${item.count} times since ${timeAgo(item.firstOccurrence)}`;

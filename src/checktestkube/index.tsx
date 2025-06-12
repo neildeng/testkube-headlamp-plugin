@@ -1,8 +1,8 @@
-import {SectionBox} from '@kinvolk/headlamp-plugin/lib/components/common';
-import {Link} from '@mui/material';
+import { SectionBox } from '@kinvolk/headlamp-plugin/lib/components/common';
+import { Link } from '@mui/material';
 
 export function NotSupported(props: { typeName: string }) {
-  const {typeName} = props;
+  const { typeName } = props;
   return (
     <SectionBox title={typeName}>
       <p>Testkube installation has no support for {typeName}.</p>

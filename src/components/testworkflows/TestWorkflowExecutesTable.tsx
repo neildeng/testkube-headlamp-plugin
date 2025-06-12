@@ -1,19 +1,19 @@
-import React from "react";
-import {GetTestkubeWorkflowExecutes} from "../../services/TestkubeProxyAPI";
-import {ActionButton, SectionBox} from "@kinvolk/headlamp-plugin/lib/CommonComponents";
-import Table from "../common/Table";
+import { ActionButton, SectionBox } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
+import React from 'react';
+import { GetTestkubeWorkflowExecutes } from '../../services/TestkubeProxyAPI';
+import Table from '../common/Table';
 
 interface TestkubeWorkflowExecutesTableProps {
   testkubeWorkflowName: string;
 }
 
-export function TestkubeWorkflowExecutesTable(props: TestkubeWorkflowExecutesTableProps) {
-  const {testkubeWorkflowName} = props;
+export function TestWorkflowExecutesTable(props: TestkubeWorkflowExecutesTableProps) {
+  const { testkubeWorkflowName } = props;
   const [executes, setExecutes] = React.useState<Array<any>>([]);
 
   React.useEffect(() => {
     (async () => {
-      const response = await GetTestkubeWorkflowExecutes({name: testkubeWorkflowName});
+      const response = await GetTestkubeWorkflowExecutes({ name: testkubeWorkflowName });
       setExecutes(response?.results);
     })();
   }, [props]);
@@ -25,26 +25,26 @@ export function TestkubeWorkflowExecutesTable(props: TestkubeWorkflowExecutesTab
         columns={[
           {
             header: 'ID',
-            accessorFn: item => (item.id),
+            accessorFn: item => item.id,
           },
           {
             header: 'NAME',
-            accessorFn: item => (item.name),
+            accessorFn: item => item.name,
           },
           {
             header: 'STATUS',
-            accessorFn: item => (item.result.status),
+            accessorFn: item => item.result.status,
           },
           {
             header: 'DURATION',
-            accessorFn: item => (item.result.duration),
+            accessorFn: item => item.result.duration,
           },
           {
             header: 'Archive',
-            Cell: ({row: {original: item}}) => (
+            Cell: ({ row: { original: item } }) => (
               <>
                 <ActionButton
-                  description={"Download Archive"}
+                  description={'Download Archive'}
                   icon={'mdi:download'}
                   onClick={async (): Promise<void> => {
                     console.info('downloading archive for execute', item.id);

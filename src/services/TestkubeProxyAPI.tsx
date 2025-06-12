@@ -1,4 +1,4 @@
-import {ApiProxy} from '@kinvolk/headlamp-plugin/lib';
+import { ApiProxy } from '@kinvolk/headlamp-plugin/lib';
 
 const request = ApiProxy.request;
 
@@ -28,13 +28,12 @@ export function createTestKubeEndpoint(
 }
 
 function makeTestkubeUrl(endpoint: PrometheusEndpoint) {
-  return `/api/v1/namespaces/${endpoint.namespace}/${endpoint.type.toString()}/${endpoint.name}:${endpoint.port}/proxy/`;
+  return `/api/v1/namespaces/${endpoint.namespace}/${endpoint.type.toString()}/${endpoint.name}:${
+    endpoint.port
+  }/proxy/`;
 }
 
-async function getTestKube(props: {
-  apiPath: string;
-  query?: string;
-}): Promise<any> {
+async function getTestKube(props: { apiPath: string; query?: string }): Promise<any> {
   const params = new URLSearchParams();
   if (props.query) {
     params.append('query', props.query);
@@ -44,7 +43,7 @@ async function getTestKube(props: {
 
   const response = await request(url, {
     method: 'GET',
-    isJSON: false
+    isJSON: false,
   });
   if (response.status === 200) {
     return response.json();
@@ -89,7 +88,7 @@ interface TestkubeWorkflowProps {
 
 export async function GetTestkubeWorkflowExecutes(props: TestkubeWorkflowProps) {
   try {
-    console.log("Fetching executes for test workflow:", props.name);
+    console.log('Fetching executes for test workflow:', props.name);
     const response = await getTestKube({
       apiPath: `v1/test-workflows/${props.name}/executions`,
     });
@@ -102,7 +101,7 @@ export async function GetTestkubeWorkflowExecutes(props: TestkubeWorkflowProps) 
 
 export async function RunTestWorkflow(props: TestkubeWorkflowProps) {
   try {
-    console.log("Run executes for test workflow:", props.name);
+    console.log('Run executes for test workflow:', props.name);
     const response = await postTestKube({
       apiPath: `v1/test-workflows/${props.name}/executions`,
       isJSON: false,
