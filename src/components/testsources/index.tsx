@@ -34,7 +34,7 @@ export function TestSourcesList() {
 
   return (
     <>
-      <SectionBox title={<SectionFilterHeader title="Sources" />}>
+      <SectionBox title={<SectionFilterHeader title="Test Sources" />}>
         <Table
           data={resources}
           // @ts-ignore -- TODO Update the sorting param
