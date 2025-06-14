@@ -7,7 +7,6 @@ import {
 import Event from '@kinvolk/headlamp-plugin/lib/K8s/event';
 import { KubeObjectClass } from '@kinvolk/headlamp-plugin/lib/lib/k8s/cluster';
 import { localeDate, timeAgo } from '@kinvolk/headlamp-plugin/lib/Utils';
-import React from 'react';
 import Table from '../common/Table';
 import { PluralName } from './pluralName';
 
@@ -27,27 +26,6 @@ export function ObjectEvents(props: {
     return <></>;
   }
   return <ObjectEventsRenderer events={events} />;
-}
-
-export function TestKubeLink(resourceClass: KubeObjectClass) {
-  const pluralName = PluralName(resourceClass.kind);
-
-  return {
-    header: 'Name',
-    accessorKey: 'metadata.name',
-    Cell: ({ cell, row }) => (
-      <Link
-        routeName={pluralName.slice(0, -1)}
-        params={{
-          name: row.original.jsonData.metadata.name,
-          namespace: row.original.jsonData.metadata.namespace,
-          pluralName: pluralName,
-        }}
-      >
-        {cell.getValue()}
-      </Link>
-    ),
-  };
 }
 
 export function ObjectEventsRenderer(props: { events?: Event[] }) {
@@ -137,4 +115,27 @@ export function ObjectEventsRenderer(props: { events?: Event[] }) {
       />
     </SectionBox>
   );
+}
+
+export function TestKubeLink(resourceClass: KubeObjectClass) {
+  const pluralName = PluralName(resourceClass.kind);
+
+  return {
+    header: 'Name',
+    accessorKey: 'metadata.name',
+    Cell: ({ cell, row }) => (
+      <>
+        <Link
+          routeName={pluralName.slice(0, -1)}
+          params={{
+            name: row.original.jsonData.metadata.name,
+            namespace: row.original.jsonData.metadata.namespace,
+            pluralName: pluralName,
+          }}
+        >
+          {cell.getValue()}
+        </Link>
+      </>
+    ),
+  };
 }
