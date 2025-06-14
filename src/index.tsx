@@ -5,6 +5,7 @@ import {
   registerSidebarEntry,
 } from '@kinvolk/headlamp-plugin/lib';
 import { PLUGIN_NAME, Settings } from './components/common/Settings';
+import Overview from './components/overview/Overview';
 import { TestSourceDetailViewer, TestSourcesList } from './components/testsources';
 import { TestWorkflowDetailViewer } from './components/testworkflows/TestWorkflowDetailViewer';
 import { TestWorkflowsList } from './components/testworkflows/TestWorkflowsList';
@@ -20,10 +21,18 @@ registerPluginSettings(PLUGIN_NAME, Settings, true);
 // Main Testkube sidebar entry
 registerSidebarEntry({
   name: 'Testkube',
-  url: '/testkube/testworkflows',
+  url: '/testkube/overview',
   icon: 'simple-icons:testkube',
   parent: '',
   label: 'Testkube',
+});
+
+// sidebar entry: Overview
+registerSidebarEntry({
+  label: 'Overview',
+  name: 'TestkubeOverview',
+  parent: 'Testkube',
+  url: '/testkube/overview',
 });
 
 // sidebar entry: TestSources
@@ -46,6 +55,15 @@ registerSidebarEntry({
  * Registering routes for Testkube plugin
  * This is where we define the routes for the Testkube plugin.
  */
+
+registerRoute({
+  component: () => <Overview />,
+  exact: true,
+  parent: 'Testkube',
+  name: 'TestkubeOverview',
+  path: '/testkube/overview',
+  sidebar: 'TestkubeOverview',
+});
 
 registerRoute({
   component: () => <TestSourcesList />,
