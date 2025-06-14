@@ -43,13 +43,15 @@ export function TestWorkflowExecutesTable(props: TestkubeWorkflowExecutesTablePr
             header: 'Archive',
             Cell: ({ row: { original: item } }) => (
               <>
-                <ActionButton
-                  description={'Download Archive'}
-                  icon={'mdi:download'}
-                  onClick={async (): Promise<void> => {
-                    console.info('downloading archive for execute', item.id);
-                  }}
-                />
+                {item.result.status !== 'running' && (
+                  <ActionButton
+                    description={'Download Archive'}
+                    icon={'mdi:download'}
+                    onClick={async (): Promise<void> => {
+                      console.info('downloading archive for execute', item.id);
+                    }}
+                  />
+                )}
               </>
             ),
           },
