@@ -11,21 +11,24 @@ import { useEffect, useState } from 'react';
 
 export const PLUGIN_NAME = 'testkube';
 
-type ClusterData = {
-  isTestkubeEnabled?: boolean;
-  autoDetect?: boolean;
-  address?: string;
+type TestkubeSettings = {
+  namespace?: string;
+  apiServiceName?: string;
+  apiServicePort?: string;
+  autoRefresh?: boolean;
+  refreshInterval?: number;
+  defaultTimeout?: number;
 };
 
 type Conf = {
-  [cluster: string]: ClusterData;
+  [cluster: string]: TestkubeSettings;
 };
 
 export function getConfigStore(): ConfigStore<Conf> {
   return new ConfigStore<Conf>(PLUGIN_NAME);
 }
 
-export function getClusterConfig(cluster: string): ClusterData | null {
+export function getClusterConfig(cluster: string): TestkubeSettings | null {
   const configStore = getConfigStore();
   const conf = configStore.get();
   if (!cluster || !conf) {
@@ -34,58 +37,14 @@ export function getClusterConfig(cluster: string): ClusterData | null {
   return conf[cluster] || null;
 }
 
-export function enableTestkube(cluster: string) {
-  const store = getConfigStore();
-  const config = store.get() || {};
-  const clusterConfig = config[cluster] || { autoDetect: true };
-  store.update({
-    ...config,
-    [cluster]: {
-      ...clusterConfig,
-      isTestkubeEnabled: true,
-    },
-  });
+interface TestkubeSettingsProps {
+  data: Record<string, TestkubeSettings>;
+  onDataChange: (newData: TestkubeSettingsProps['data']) => void;
 }
 
-export function disableTestkube(cluster: string) {
-  const store = getConfigStore();
-  const config = store.get() || {};
-  const clusterConfig = config[cluster] || { autoDetect: true };
-  store.update({
-    ...config,
-    [cluster]: {
-      ...clusterConfig,
-      isTestkubeEnabled: false,
-    },
-  });
-}
-
-export function isTestkubeEnabled(cluster: string): boolean {
-  const clusterData = getClusterConfig(cluster);
-  return clusterData?.isTestkubeEnabled ?? false;
-}
-
-function isValidAddress(address: string): boolean {
-  const regex = /^[a-z0-9-]+\/[a-z0-9-]+:[0-9]+$/;
-  return regex.test(address);
-}
-
-interface SettingsProps {
-  data: Record<
-    string,
-    {
-      isTestkubeEnabled?: boolean;
-      autoDetect?: boolean;
-      address?: string;
-    }
-  >;
-  onDataChange: (newData: SettingsProps['data']) => void;
-}
-
-export function Settings(props: SettingsProps) {
+export function Settings(props: TestkubeSettingsProps) {
   const { data, onDataChange } = props;
   const [selectedCluster, setSelectedCluster] = useState('');
-  const [addressError, setAddressError] = useState(false);
 
   const clusters = useClustersConf() || {};
 
@@ -100,42 +59,32 @@ export function Settings(props: SettingsProps) {
       onDataChange({
         ...data,
         [selectedCluster]: {
-          isTestkubeEnabled: true,
-          autoDetect: true,
+          namespace: 'testkube',
+          apiServiceName: 'testkube-api-server',
+          apiServicePort: '8088',
+          autoRefresh: true,
+          refreshInterval: 30000,
+          defaultTimeout: 300,
         },
       });
     }
   }, [selectedCluster, data, onDataChange]);
 
   const selectedClusterData = data?.[selectedCluster] || {};
-  const isTestkubeEnabled = selectedClusterData.isTestkubeEnabled ?? true;
-  const isAutoDetectEnabled = isTestkubeEnabled && (selectedClusterData.autoDetect ?? true);
-  const isAddressFieldEnabled = isTestkubeEnabled && !isAutoDetectEnabled;
-
-  useEffect(() => {
-    if (selectedClusterData.address) {
-      setAddressError(!isValidAddress(selectedClusterData.address));
-    } else {
-      setAddressError(false);
-    }
-  }, [selectedClusterData.address]);
 
   const settingsRows = [
     {
-      name: 'Enable Testkube',
+      name: 'API Namespace',
       value: (
-        <Switch
-          checked={isTestkubeEnabled}
+        <TextField
+          value={selectedClusterData.namespace || ''}
           onChange={e => {
-            const newTestkubeEnabled = e.target.checked;
+            const newVal = e.target.value;
             onDataChange({
               ...(data || {}),
               [selectedCluster]: {
                 ...((data || {})[selectedCluster] || {}),
-                isTestkubeEnabled: newTestkubeEnabled,
-                autoDetect: newTestkubeEnabled
-                  ? data?.[selectedCluster]?.autoDetect ?? true
-                  : false,
+                namespace: newVal,
               },
             });
           }}
@@ -143,45 +92,93 @@ export function Settings(props: SettingsProps) {
       ),
     },
     {
-      name: 'Auto detect',
+      name: 'API Service Name',
       value: (
-        <Switch
-          disabled={!isTestkubeEnabled}
-          checked={isAutoDetectEnabled}
-          onChange={e =>
+        <TextField
+          value={selectedClusterData.apiServiceName || ''}
+          onChange={e => {
+            const newVal = e.target.value;
             onDataChange({
               ...(data || {}),
               [selectedCluster]: {
                 ...((data || {})[selectedCluster] || {}),
-                autoDetect: e.target.checked,
+                apiServiceName: newVal,
               },
-            })
-          }
+            });
+          }}
         />
       ),
     },
     {
-      name: 'Testkube Api Address',
+      name: 'API Service Port',
       value: (
         <TextField
-          disabled={!isAddressFieldEnabled}
-          helperText={
-            addressError
-              ? 'Invalid format. Use: namespace/service-name:port'
-              : 'Address of the Prometheus Service, only used when auto-detection is disabled. Format: namespace/service-name:port'
-          }
-          error={addressError}
-          value={selectedClusterData.address || ''}
+          value={selectedClusterData.apiServicePort || ''}
           onChange={e => {
-            const newAddress = e.target.value;
+            const newVal = e.target.value;
             onDataChange({
               ...(data || {}),
               [selectedCluster]: {
                 ...((data || {})[selectedCluster] || {}),
-                address: newAddress,
+                apiServicePort: newVal,
               },
             });
-            setAddressError(!isValidAddress(newAddress));
+          }}
+        />
+      ),
+    },
+    {
+      name: 'Auto Refresh',
+      value: (
+        <Switch
+          checked={selectedClusterData.autoRefresh}
+          onChange={e => {
+            const newVal = e.target.checked;
+            onDataChange({
+              ...(data || {}),
+              [selectedCluster]: {
+                ...((data || {})[selectedCluster] || {}),
+                autoRefresh: newVal ? data?.[selectedCluster]?.autoRefresh ?? true : false,
+              },
+            });
+          }}
+        />
+      ),
+    },
+    {
+      name: 'Refresh Interval',
+      value: (
+        <TextField
+          disabled={!selectedClusterData.autoRefresh}
+          value={selectedClusterData.refreshInterval || 30000}
+          onChange={e => {
+            const newVal = e.target.value;
+            onDataChange({
+              ...(data || {}),
+              [selectedCluster]: {
+                ...((data || {})[selectedCluster] || {}),
+                refreshInterval: newVal,
+              },
+            });
+          }}
+        />
+      ),
+    },
+    {
+      name: 'Default Timeout',
+      value: (
+        <TextField
+          disabled={!selectedClusterData.autoRefresh}
+          value={selectedClusterData.defaultTimeout || 300}
+          onChange={e => {
+            const newVal = e.target.value;
+            onDataChange({
+              ...(data || {}),
+              [selectedCluster]: {
+                ...((data || {})[selectedCluster] || {}),
+                defaultTimeout: newVal,
+              },
+            });
           }}
         />
       ),
