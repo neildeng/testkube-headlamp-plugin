@@ -6,7 +6,7 @@ export enum KubernetesType {
   services = 'services',
 }
 
-export type PrometheusEndpoint = {
+export type TestKubeEndpoint = {
   type: KubernetesType;
   name: string | undefined;
   namespace: string | undefined;
@@ -18,7 +18,7 @@ export function createTestKubeEndpoint(
   name: string | undefined = 'testkube-api-server',
   namespace: string | undefined = 'testkube',
   port: string | undefined = '8088'
-): PrometheusEndpoint {
+): TestKubeEndpoint {
   return {
     type,
     name,
@@ -27,7 +27,7 @@ export function createTestKubeEndpoint(
   };
 }
 
-function makeTestkubeUrl(endpoint: PrometheusEndpoint) {
+function makeTestkubeUrl(endpoint: TestKubeEndpoint) {
   return `/api/v1/namespaces/${endpoint.namespace}/${endpoint.type.toString()}/${endpoint.name}:${
     endpoint.port
   }/proxy/`;
