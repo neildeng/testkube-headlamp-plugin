@@ -149,14 +149,10 @@ function SummarySection(props: any) {
           flexWrap: 'wrap',
         }}
       >
-        <Box width="300px" sx={{}}>
-          <Box sx={{ color: 'text.secondary' }}>Running</Box>
-          <Box sx={{ color: 'success.dark', fontSize: 42, fontWeight: 'bold' }}>98.5 K</Box>
-        </Box>
-        <Box width="300px" sx={{ mt: 2 }}>
+        <Box width="300px" sx={{ mt: 6 }}>
           <TestWorkflowsPassFailRatioChart totals={executes.totals} />
         </Box>
-        <Box width="300px" sx={{ mt: 2 }}>
+        <Box width="300px" sx={{ mt: 6 }}>
           <TestWorkflowsRunningQueuedChart totals={executes.totals} />
         </Box>
       </Box>
