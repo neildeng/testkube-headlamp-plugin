@@ -39,7 +39,9 @@ async function getTestKube(props: { apiPath: string; query?: string }): Promise<
     params.append('query', props.query);
   }
 
-  const url = `${makeTestkubeUrl(createTestKubeEndpoint())}${props.apiPath}?${params.toString()}`;
+  const url = `${makeTestkubeUrl(createTestKubeEndpoint())}${props.apiPath}${
+    params.toString() !== '' ? '?' : ''
+  }${params.toString()}`;
 
   const response = await request(url, {
     method: 'GET',
@@ -88,7 +90,6 @@ interface TestkubeWorkflowProps {
 
 export async function GetTestkubeWorkflowExecutes(props: TestkubeWorkflowProps) {
   try {
-    console.log('Fetching executes for test workflow:', props.name);
     const response = await getTestKube({
       apiPath: `v1/test-workflows/${props.name}/executions`,
     });
@@ -101,7 +102,6 @@ export async function GetTestkubeWorkflowExecutes(props: TestkubeWorkflowProps) 
 
 export async function RunTestWorkflow(props: TestkubeWorkflowProps) {
   try {
-    console.log('Run executes for test workflow:', props.name);
     const response = await postTestKube({
       apiPath: `v1/test-workflows/${props.name}/executions`,
       isJSON: false,
@@ -109,6 +109,45 @@ export async function RunTestWorkflow(props: TestkubeWorkflowProps) {
     });
     return response.json();
   } catch (error) {
+    throw error;
+  }
+}
+
+export async function DownloadTestWorkflowArtifactsAction(executionId: string): Promise<void> {
+  try {
+    const url = `${makeTestkubeUrl(
+      createTestKubeEndpoint()
+    )}v1/test-workflow-executions/${executionId}/artifact-archive`;
+
+    const response = await request(url, {
+      method: 'GET',
+      isJSON: false,
+    });
+
+    if (!response.ok) {
+      throw new Error(`下載失敗: HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    // 取得 Blob 資料
+    const blob = await response.blob();
+
+    // 觸發瀏覽器下載
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `execution-${executionId}-artifacts.tar.gz`;
+
+    // 觸發下載
+    document.body.appendChild(link);
+    link.click();
+
+    // 清理
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+
+    console.log('檔案下載完成');
+  } catch (error) {
+    console.error('下載 artifacts 失敗:', error);
     throw error;
   }
 }
