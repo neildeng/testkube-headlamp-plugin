@@ -1,6 +1,9 @@
 import { ActionButton, SectionBox } from '@kinvolk/headlamp-plugin/lib/CommonComponents';
 import React from 'react';
-import { GetTestkubeWorkflowExecutes } from '../../services/TestkubeProxyAPI';
+import {
+  DownloadTestWorkflowArtifactsAction,
+  GetTestkubeWorkflowExecutes,
+} from '../../services/TestkubeProxyAPI';
 import Table from '../common/Table';
 
 interface TestkubeWorkflowExecutesTableProps {
@@ -48,7 +51,7 @@ export function TestWorkflowExecutesTable(props: TestkubeWorkflowExecutesTablePr
                     description={'Download Archive'}
                     icon={'mdi:download'}
                     onClick={async (): Promise<void> => {
-                      console.info('downloading archive for execute', item.id);
+                      await DownloadTestWorkflowArtifactsAction(item.id);
                     }}
                   />
                 )}
