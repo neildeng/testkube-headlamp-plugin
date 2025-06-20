@@ -6,41 +6,45 @@ import { StatusIcon } from '../common/TestKubeIconPack';
 const Dashboard: React.FC = () => {
   // 統計卡片資料
   const statsCards = [
-    {
-      title: 'Tests',
-      value: 0,
-      color: 'primary',
-      // linkTo: 'Tests',
-    },
-    {
-      title: 'Test Workflows',
-      value: 0,
-      color: 'action',
-      linkTo: 'TestWorkflows',
-    },
+    // {
+    //   title: 'Tests',
+    //   value: 0,
+    //   color: 'primary',
+    //   // linkTo: 'Tests',
+    // },
+    // {
+    //   title: 'Test Workflows',
+    //   value: 0,
+    //   color: 'action',
+    //   linkTo: 'TestWorkflows',
+    // },
     {
       title: 'Running',
       value: 0,
       icon: StatusIcon({ status: 'running', animated: true }),
       color: '#2196f3',
+      linkTo: null,
     },
     {
       title: 'Passed',
       value: 3,
       icon: StatusIcon({ status: 'success' }),
       color: 'green',
+      linkTo: null,
     },
     {
       title: 'Failed',
       value: 5,
       icon: StatusIcon({ status: 'error' }),
       color: 'error',
+      linkTo: null,
     },
     {
       title: 'Queued',
       value: 5,
       icon: StatusIcon({ status: 'queued' }),
       color: '#ff9800',
+      linkTo: null,
     },
   ];
 
@@ -56,7 +60,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-      <SectionBox title="Testkube Overview">
+      <SectionBox title="Test Workflow Overview">
         <Grid container spacing={3}>
           {statsCards.map((card, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
