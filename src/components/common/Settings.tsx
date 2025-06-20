@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 
 export const PLUGIN_NAME = 'testkube';
 
-type TestkubeSettings = {
+export type TestkubeSettings = {
   namespace?: string;
   apiServiceName?: string;
   apiServicePort?: string;
