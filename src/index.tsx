@@ -6,6 +6,7 @@ import {
 } from '@kinvolk/headlamp-plugin/lib';
 import { PLUGIN_NAME, Settings } from './components/common/Settings';
 import Overview from './components/overview/Overview';
+import { TestSourceDetailViewer, TestSourcesList } from './components/testsources';
 import { TestWorkflowDetailViewer } from './components/testworkflows/TestWorkflowDetailViewer';
 import { TestWorkflowsList } from './components/testworkflows/TestWorkflowsList';
 
@@ -35,12 +36,12 @@ registerSidebarEntry({
 });
 
 // sidebar entry: TestSources
-// registerSidebarEntry({
-//   label: 'Test Sources',
-//   name: 'TestSources',
-//   parent: 'Testkube',
-//   url: '/testkube/testsources',
-// });
+registerSidebarEntry({
+  label: 'Test Sources',
+  name: 'TestSources',
+  parent: 'Testkube',
+  url: '/testkube/testsources',
+});
 
 // sidebar entry: TestWorkflows
 registerSidebarEntry({
@@ -64,23 +65,23 @@ registerRoute({
   sidebar: 'TestkubeOverview',
 });
 
-// registerRoute({
-//   component: () => <TestSourcesList />,
-//   exact: true,
-//   parent: 'Testkube',
-//   name: 'TestSources',
-//   path: '/testkube/testsources',
-//   sidebar: 'TestSources',
-// });
+registerRoute({
+  component: () => <TestSourcesList />,
+  exact: true,
+  parent: 'Testkube',
+  name: 'TestSources',
+  path: '/testkube/testsources',
+  sidebar: 'TestSources',
+});
 
-// registerRoute({
-//   path: '/testkube/testsource/:namespace/:name',
-//   parent: 'Testkube',
-//   sidebar: 'TestSources',
-//   component: () => <TestSourceDetailViewer />,
-//   exact: true,
-//   name: 'testsource',
-// });
+registerRoute({
+  path: '/testkube/testsource/:namespace/:name',
+  parent: 'Testkube',
+  sidebar: 'TestSources',
+  component: () => <TestSourceDetailViewer />,
+  exact: true,
+  name: 'testsource',
+});
 
 registerRoute({
   component: () => <TestWorkflowsList />,
