@@ -18,6 +18,7 @@ export type TestkubeSettings = {
   autoRefresh?: boolean;
   refreshInterval?: number;
   defaultTimeout?: number;
+  enabledLegacy?: boolean;
 };
 
 type Conf = {
@@ -65,6 +66,7 @@ export function Settings(props: TestkubeSettingsProps) {
           autoRefresh: true,
           refreshInterval: 30000,
           defaultTimeout: 300,
+          enabledLegacy: false,
         },
       });
     }
@@ -177,6 +179,24 @@ export function Settings(props: TestkubeSettingsProps) {
               [selectedCluster]: {
                 ...((data || {})[selectedCluster] || {}),
                 defaultTimeout: newVal,
+              },
+            });
+          }}
+        />
+      ),
+    },
+    {
+      name: 'Enable Legacy',
+      value: (
+        <Switch
+          checked={selectedClusterData.enabledLegacy || false}
+          onChange={e => {
+            const newVal = e.target.checked;
+            onDataChange({
+              ...(data || {}),
+              [selectedCluster]: {
+                ...((data || {})[selectedCluster] || {}),
+                enabledLegacy: newVal ? data?.[selectedCluster]?.enabledLegacy ?? true : false,
               },
             });
           }}
